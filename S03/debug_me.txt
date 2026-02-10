@@ -1,0 +1,4 @@
+In the second iteration of the f function the debug tool shows us that the program stopped due to an error in the
+calculations. diving deeper into the function f called using the debug tool we can see that the internal variable
+of t1 is equal to zero according to our program. This causes an error because the program later on will try to divide
+with this variable in the denominator. It is not possible to divide by zero then an error shows up.
