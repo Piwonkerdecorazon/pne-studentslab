@@ -9,6 +9,7 @@ thymine = 0
 cytosine = 0
 totalBases = 0
 #use .strip() function to remove spaces and /n characters at the end of a string
+#do not copypaste the code, recall a function
 for j in range (0, numberofsequences):
     length = len(lines[j].strip())
     sequence = lines[j].strip()
