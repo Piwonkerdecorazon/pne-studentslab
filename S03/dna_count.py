@@ -1,8 +1,3 @@
-from S03.dna_count_file_corrected import adenosine
-
-sequence = input("Introduce the DNA sequence: ")
-length = len(sequence)
-print("Total length of the sequence: " + str(length))
 def count_bases(sequence):
     adenosine = 0
     guanine = 0
@@ -19,14 +14,12 @@ def count_bases(sequence):
         elif sequence[i] == 'T':
             thymine+= 1
         totalBases+=1
-    result = {"A": adenosine, "G": guanine, "C": adenosine, "T": adenosine, "Total Bases":   }
+    result = {"A": adenosine, "G": guanine, "C": adenosine, "T": adenosine, "Total Bases": totalBases }
     return result
 
-def main():
+
+
+if __name__ == "__main__": #if importing the code, everything in this if is ignored by other programs, so use it to isolate
     sequence = input("Introduce the DNA sequence: ")
     length = len(sequence)
     print("Total length of the sequence: " + str(length))
-    print
-
-if __name__ == "__main__": #if importing the code, everything in this if is ignored by other programs, so use it to isolate
-    main()

@@ -1,7 +1,8 @@
+from S03.dna_count import count_bases
 file = open("dna.txt", "r")
 lines = file.readlines()
 file.close()
-
+print(count_bases(lines[1]))
 numberofsequences = len(lines)
 adenosine = 0
 guanine = 0
