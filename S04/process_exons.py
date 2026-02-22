@@ -3,7 +3,7 @@ from unittest import skip
 
 
 def get_exons_from_file(filename):
-    lines = Path(FILENAME).read_text().splitlines()
+    lines = Path(filename).read_text().splitlines()
     exon = ""
     exon_list = []
     for i in range (0, len(lines)):
