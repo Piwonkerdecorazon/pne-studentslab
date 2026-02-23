@@ -84,6 +84,7 @@ def dictionary_exercise(dictionary):
     print(str(dictionary["grades"]["Databases"]))
     average = dictionary["grades"]["PNE"] + dictionary["grades"]["Networks"] + dictionary["grades"]["Networks"] / len(dictionary["grades"])
     print (str(round(average, 2)))
+    
 student = {
     "name": "Carlos",
     "age": 22,
