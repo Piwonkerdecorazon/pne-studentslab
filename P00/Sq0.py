@@ -30,6 +30,6 @@ def seq_reverse(seq):
 def seq_complement(seq):
     #With a translation method it is much easier
     complementary_bases = str.maketrans("ATCG", "TAGC") #In the left the original characters and in the right the complements
-    return seq.translate(complementary_bases)
+    return seq.translate(complementary_bases) #We translate our sequence using our method
 
 print(seq_complement("ACGGT"))
