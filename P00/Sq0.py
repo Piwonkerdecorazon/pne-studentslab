@@ -3,7 +3,8 @@ def seq_ping():
     print("ok")
 
 def seq_read_fasta(filename):
-    FOLDER = "C:/Users/pablo/PycharmProjects/pne-studentslab/gene_files/"
+    #FOLDER = "C:/Users/pablo/PycharmProjects/pne-studentslab/gene_files/"
+    FOLDER = "C:/home/alumnos/panasa/PycharmProjects/pne-studentslab/gene_files/"
     with open(FOLDER + filename, "r") as file:
         lines = file.read().splitlines()
     del lines[0]
