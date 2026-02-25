@@ -2,25 +2,26 @@ import termcolor
 class Seq:
     """A class for representing sequences"""
 
-    def __init__(self, strbases):
-        # Initialize the sequence with the value
-        # passed as argument when creating the object
-        self.strbases = strbases
-        bases= ["A", "C", "G", "T"]
-        length = len(strbases)
-        valid = True
-        for j in range(0, length):
-            if strbases[j] not in bases:
-                valid = False
-            elif strbases[j] in bases:
-                pass
-
-
-        if valid == True:
-            print("New sequence created!")
+    def __init__(self, strbases=None):
+        if strbases is None:
+            print("NULL SEQUENCE CREATED")
+            self.strbases = "NULL"
         else:
-            print("Invalid sequence!")
-            self.strbases = "ERROR"
+            self.strbases = strbases
+            bases= ["A", "C", "G", "T"]
+            length = len(strbases)
+            valid = True
+            for j in range(0, length):
+                if strbases[j] not in bases:
+                    valid = False
+                elif strbases[j] in bases:
+                    pass
+
+            if valid == True:
+                print("New sequence created!")
+            else:
+                print("Invalid sequence!")
+                self.strbases = "ERROR"
 
 
     def __str__(self):
