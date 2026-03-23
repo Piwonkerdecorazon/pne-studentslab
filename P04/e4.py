@@ -21,7 +21,7 @@ def process_client(s):
     req_line = lines[0] #GET /info/A  HTTP/1.1
     parts = req_line.split(" ")
     path = parts [1] #/info/A
-    path_list = ["/info/A"]
+    path_list = ["/info/A", "/info/G", "/info/C", "/info/T"]
 
     if path in path_list:
         body = Path("html" + path + ".html").read_text()

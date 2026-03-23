@@ -21,10 +21,15 @@ def process_client(s):
     req_line = lines[0] #GET /info/A  HTTP/1.1
     parts = req_line.split(" ")
     path = parts [1] #/info/A
-    path_list = ["/info/A"]
+    path_list = ["/info/A", "/info/G", "/info/C", "/info/T", "/"]
 
     if path in path_list:
-        body = Path("html" + path + ".html").read_text()
+        if path == "/":
+            body = Path("html" + "/index" + ".html").read_text()
+        else:
+            body = Path("html" + path + ".html").read_text()
+    else:
+        body = Path("html/Error.html").read_text()
 
     print("Request line: ", end="")
     termcolor.cprint(req_line, "green")
