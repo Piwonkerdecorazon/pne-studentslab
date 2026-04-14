@@ -18,7 +18,7 @@ for i in range(0,len(sequence), 10):
 print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
-IP = "212.128.255.88" # your IP address
+IP = "192.168.1.132" # your IP address
 PORT_1 = 8080
 PORT_2 = 8081
 
@@ -30,19 +30,17 @@ print(c1)
 print(c2)
 
 for i in file_list:
-    print("To server: ", "Sending FRAT1 gene to the server in fragments...")
+    print("[To servers:] ", "Sending FRAT1 gene to the server in fragments...")
     response = c1.talk("Sending " + i + " gene to the server...")
-    print("From server: ", f"Response: {response}")
+    print("[From server: 1]", f"Response: {response}")
     response = c2.talk("Sending " + i + " gene to the server...")
-    print("From server: ", f"Response: {response}")
+    print("[From server: 2]", f"Response: {response}")
     for i in range (0,len(seq_list)):
         if i % 2 != 0:
-            print("To server: ", seq_list[i])
+            print("To server 1: ", seq_list[i])
             response = c1.talk(seq_list[i])
-            print("From server: ", f"Response: {response}")
+            print("[From server: 1]", f"Response: {response}")
         else:
-            print("To server: ", seq_list[i])
+            print("To server 2: ", seq_list[i])
             response = c2.talk(seq_list[i])
-            print("From server: ", f"Response: {response}")
-
-#Exercise
+            print("[From server: 2]", f"Response: {response}")

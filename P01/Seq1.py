@@ -1,4 +1,3 @@
-import termcolor
 class Seq:
     """A class for representing sequences"""
 
