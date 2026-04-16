@@ -3,12 +3,19 @@ import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
+
+from S03.dna_count_file import totalBases
 from Seq1 import Seq
 import jinja2 as j
 
+S1 = Seq("ATGCGTACTGCTAGCTAGCT")
+S2 = Seq("CGGATTCGATCGATAGCTAG")
+S3 = Seq("TTTAGCGATCGATCGATCGA")
+S4 = Seq("GACGTACGTACGTACGTACG")
+file_list = ["U5", "FRAT1", "ADA", "FXN", "RNU6_269P"]
 
-
-
+s = Seq()
+sequence_list = [S1, S2, S3, S4]
 # Define the Server's port
 PORT = 8080
 
@@ -46,6 +53,40 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         else:
             if 'ping' in arguments:
                 contents = Path('html/ping.html').read_text()
+            elif 'get sequence' in arguments:
+                contents = read_html_file("Sequence.html").render(context={"number": arguments['Seq number'][0], "sequence": sequence_list[int(arguments['Seq number'][0])-1]})  # provide a dictionary to build the form
+            elif 'get gene' in arguments:
+                print("../gene_files/" + str(arguments['Gene'][0]) + ".txt")
+                s.read_fasta("../gene_files/" + str(arguments['Gene'][0]) + ".txt")
+                print(s)
+                contents = read_html_file("Gene.html").render(context={"name": arguments['Gene'][0], "gene": s})  # provide a dictionary to build the form
+            elif 'operate' in arguments:
+                user_sequence = arguments['sequence'][0]
+                s(user_sequence)
+                output = ""
+                operation = ""
+                if 'info' in arguments:
+                    seq_count = s.count()
+                    totalCount = 0
+                    for i in seq_count:
+                        output += i + ": " + str(seq_count[i]) + "\n"
+                        totalCount += seq_count[i]
+                    output += str(totalCount) + "\n"
+                    operation = "info"
+                elif 'reverse' in arguments:
+                    output = s.reverse()
+                    operation = "reverse"
+                elif 'complementary' in arguments:
+                    output = s.reverse()
+                    operation = "reverse"
+                contents = read_html_file("Gene.html").render(context={
+                    "input seq": s,
+                    "operation": operation,
+                    "output seq": output
+
+                })  # provide a dictionary to build the form
+
+
 
 
 
