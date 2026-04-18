@@ -61,28 +61,29 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 print(s)
                 contents = read_html_file("Gene.html").render(context={"name": arguments['Gene'][0], "gene": s})  # provide a dictionary to build the form
             elif 'operate' in arguments:
-                user_sequence = arguments['sequence'][0]
-                s(user_sequence)
+                user_sequence = Seq(str(arguments['input seq'][0]))
                 output = ""
                 operation = ""
                 if 'info' in arguments:
-                    seq_count = s.count()
+                    seq_count = user_sequence.count()
                     totalCount = 0
                     for i in seq_count:
                         output += i + ": " + str(seq_count[i]) + "\n"
                         totalCount += seq_count[i]
-                    output += str(totalCount) + "\n"
+                    output += "The total of bases is: " + str(totalCount) + "\n"
                     operation = "info"
                 elif 'reverse' in arguments:
-                    output = s.reverse()
+                    output = user_sequence.reverse()
                     operation = "reverse"
                 elif 'complementary' in arguments:
-                    output = s.reverse()
-                    operation = "reverse"
-                contents = read_html_file("Gene.html").render(context={
-                    "input seq": s,
+                    output = user_sequence.complement()
+                    operation = "complementary"
+                print(output)
+                print(operation)
+                contents = read_html_file("Operation.html").render(context={
+                    "input_seq": user_sequence,
                     "operation": operation,
-                    "output seq": output
+                    "output_seq": output
 
                 })  # provide a dictionary to build the form
 
