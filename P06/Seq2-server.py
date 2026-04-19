@@ -3,8 +3,6 @@ import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
-
-from S03.dna_count_file import totalBases
 from Seq1 import Seq
 import jinja2 as j
 
