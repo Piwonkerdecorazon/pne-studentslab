@@ -54,12 +54,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if 'ping' in arguments:
                 contents = Path('html/ping.html').read_text()
             elif 'get sequence' in arguments:
-                contents = read_html_file("Sequence.html").render(context={"number": arguments['Seq number'][0], "sequence": sequence_list[int(arguments['Seq number'][0])-1]})  # provide a dictionary to build the form
+                contents = read_html_file("get.html").render(context={"number": arguments['Seq number'][0], "sequence": sequence_list[int(arguments['Seq number'][0])-1]})  # provide a dictionary to build the form
             elif 'get gene' in arguments:
                 print("../gene_files/" + str(arguments['Gene'][0]) + ".txt")
                 s.read_fasta("../gene_files/" + str(arguments['Gene'][0]) + ".txt")
                 print(s)
-                contents = read_html_file("Gene.html").render(context={"name": arguments['Gene'][0], "gene": s})  # provide a dictionary to build the form
+                contents = read_html_file("gene.html").render(context={"name": arguments['Gene'][0], "gene": s})  # provide a dictionary to build the form
             elif 'operate' in arguments:
                 user_sequence = Seq(str(arguments['input seq'][0]))
                 output = ""
@@ -80,7 +80,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     operation = "complementary"
                 print(output)
                 print(operation)
-                contents = read_html_file("Operation.html").render(context={
+                contents = read_html_file("operation.html").render(context={
                     "input_seq": user_sequence,
                     "operation": operation,
                     "output_seq": output
