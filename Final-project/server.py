@@ -63,11 +63,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     contents = Path('html/Error.html').read_text()
             if 'chromosome_length' in arguments:
-                if 'chromosome_species' in arguments and 'chromosome_name' in arguments:
-                        contents = read_html_file("chromosome.html").render(context=
-                        {
-                            "length": e.chrom_length(arguments['chromosome_species'][0], arguments['chromosome_name'][0]),
-                        })
+                if ('chromosome_species' in arguments) and ('chromosome_name' in arguments):
+                    if e.check_specie(arguments['chromosome_species'][0]) == True:
+                        if e.check_chromosome(arguments['chromosome_species'][0], arguments['chromosome_name'][0]) == True:
+                            contents = read_html_file("chromosome.html").render(context=
+                            {
+                                "length": e.chrom_length(arguments['chromosome_species'][0], arguments['chromosome_name'][0]),
+                            })
+                        else:
+                            contents = Path('html/Error.html').read_text()
+                    else:
+                        contents = Path('html/Error.html').read_text()
                 else:
                     contents = Path('html/Error.html').read_text()
 
