@@ -45,12 +45,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = Path('html/Error.html').read_text()
         else:
             if 'list' in arguments:
-                limit = 0
                 if 'limit' in arguments:
                     limit = int(arguments['limit'][0])
                     contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
                 else:
-                    contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": "not defined by the user"})
+                    contents = read_html_file("list.html").render(context={"list": e.list(), "limit": "not defined by the user"})
 
 
 

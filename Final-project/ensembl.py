@@ -31,12 +31,16 @@ class ensembl:
         # -- Read the response's body
         data1 = r1.read().decode("utf-8")
         response = json.loads(data1)
+        #Ensembl sends a disorganized list, then we need to sort alphabetically every time we access
+        def get_display_name(species):
+            return species['display_name']
+        species = sorted(response['species'], key=get_display_name)
+        print (species)
         if limit is None or limit >= len(response['species']):
             for i in range(0, len(response['species'])):
-                print(str(len(response['species'])))
-                species_list += (response['species'][i]['display_name'] + "\n")
+                species_list += (species[i]['display_name'] + "\n")
         else:
             for i in range (0, limit):
-                species_list += (response['species'][i]['display_name'] + "\n")
+                species_list += (response[i]['display_name'] + "\n")
 
         return species_list
