@@ -50,6 +50,26 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
                 else:
                     contents = read_html_file("list.html").render(context={"list": e.list(), "limit": "not defined by the user"})
+            if 'get_karyotype' in arguments:
+                if 'species_karyotype' in arguments:
+                    if e.check_specie(arguments['species_karyotype'][0]) == True:
+                        contents = read_html_file("karyotype.html").render(context=
+                        {
+                            "karyotype": e.karyo(arguments['species_karyotype'][0]),
+                            "specie": arguments['species_karyotype'][0]
+                        })
+                    else:
+                        contents = Path('html/Error.html').read_text()
+                else:
+                    contents = Path('html/Error.html').read_text()
+            if 'chromosome_length' in arguments:
+                if 'chromosome_species' in arguments and 'chromosome_name' in arguments:
+                        contents = read_html_file("chromosome.html").render(context=
+                        {
+                            "length": e.chrom_length(arguments['chromosome_species'][0], arguments['chromosome_name'][0]),
+                        })
+                else:
+                    contents = Path('html/Error.html').read_text()
 
 
 
