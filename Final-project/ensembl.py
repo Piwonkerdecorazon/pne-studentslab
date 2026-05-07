@@ -35,7 +35,6 @@ class ensembl:
         def get_display_name(species):
             return species['display_name']
         species = sorted(response['species'], key=get_display_name)
-        print (species)
         if limit is None or limit >= len(response['species']):
             for i in range(0, len(response['species'])):
                 species_list += (species[i]['display_name'] + "\n")
