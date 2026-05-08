@@ -9,6 +9,7 @@ from ensembl import ensembl
 
 e = ensembl()
 s = Seq()
+path_list = ["/listSpecies", "/karyotype", "/chromosomeLength", "/"]
 # Define the Server's port
 PORT = 8080
 
@@ -38,55 +39,93 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # Print the request line
         termcolor.cprint(self.requestline, 'green')
         valid = True
-        if arguments == {}:
-            if path == "/":
-                contents = Path('html/main.html').read_text()
-            else:
-                contents = Path('html/Error.html').read_text()
-        else:
-            if 'list' in arguments:
-                if 'limit' in arguments:
-                    try:
-                        int(arguments['limit'][0])
-                        valid = True
-                    except:
-                        valid = False
-                    if valid == True:
-                        limit = int(arguments['limit'][0])
-                        contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
-                    else:
-                        contents = Path('html/Error.html').read_text()
-                else:
-                    contents = read_html_file("list.html").render(context={"list": e.list(), "limit": "not defined by the user"})
-            if 'get_karyotype' in arguments:
-                if 'species_karyotype' in arguments:
-                    if e.check_specie(arguments['species_karyotype'][0]) == True:
-                        contents = read_html_file("karyotype.html").render(context=
-                        {
-                            "karyotype": e.karyo(arguments['species_karyotype'][0]),
-                            "specie": arguments['species_karyotype'][0]
-                        })
-                    else:
-                        contents = Path('html/Error.html').read_text()
+        if path == "/":
+            contents = Path('html/main.html').read_text()
+        elif path == "/listSpecies":
+            if 'limit' in arguments:
+                try:
+                    int(arguments['limit'][0])
+                    valid = True
+                except ValueError:
+                    valid = False
+                if valid == True:
+                    limit = int(arguments['limit'][0])
+                    contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
                 else:
                     contents = Path('html/Error.html').read_text()
-            if 'chromosome_length' in arguments:
-                if ('chromosome_species' in arguments) and ('chromosome_name' in arguments):
-                    if e.check_specie(arguments['chromosome_species'][0]) == True:
-                        if e.check_chrom_database(arguments['chromosome_species'][0]) == True: #Check if said species has its karyotype sequenced
-                            if e.check_chromosome(arguments['chromosome_species'][0], arguments['chromosome_name'][0]) == True: #Check if the chromosome is in the karyotype
-                                contents = read_html_file("chromosome.html").render(context=
-                                {
-                                    "length": e.chrom_length(arguments['chromosome_species'][0], arguments['chromosome_name'][0])
-                                })
-                            else:
-                                contents = Path('html/Error.html').read_text()
+            else:
+                contents = read_html_file("list.html").render(context={"list": e.list(), "limit": "not defined by the user"})
+        elif path == "/karyotype":
+            if 'species' in arguments:
+                if e.check_specie(arguments['species'][0]) == True:
+                    contents = read_html_file("karyotype.html").render(context=
+                    {
+                        "karyotype": e.karyo(arguments['species'][0]),
+                        "specie": arguments['species'][0]
+                    })
+                else:
+                    contents = Path('html/Error.html').read_text()
+            else:
+                contents = Path('html/Error.html').read_text()
+        elif path == "/chromosomeLength":
+            if ('species' in arguments) and ('chromo' in arguments):
+                if e.check_specie(arguments['species'][0]) == True:
+                    if e.check_chrom_database(arguments['species'][0]) == True: #Check if said species has its karyotype sequenced
+                        if e.check_chromosome(arguments['species'][0], arguments['chromo'][0]) == True: #Check if the chromosome is in the karyotype
+                            contents = read_html_file("chromosome.html").render(context=
+                            {
+                                "length": e.chrom_length(arguments['species'][0], arguments['chromo'][0])
+                            })
                         else:
                             contents = Path('html/Error.html').read_text()
                     else:
                         contents = Path('html/Error.html').read_text()
                 else:
                     contents = Path('html/Error.html').read_text()
+            else:
+                contents = Path('html/Error.html').read_text()
+
+        #
+        #
+        #This section further on corresponds to the intermediate level:
+        #Human gene browsing
+        #
+        #
+        elif path == "/geneLookup":
+            if 'gene' in arguments:
+                contents = read_html_file("gene_id.html").render(context={"id": e.get_gene_id(arguments['gene'][0]) })
+
+            else:
+                contents = Path('html/Error.html').read_text()
+
+        elif path == "/geneSeq":
+            if 'gene' in arguments:
+                contents = read_html_file("gene_seq.html").render(context={"seq":  e.get_gene_seq(arguments['gene'][0]) })
+            else:
+                contents = Path('html/Error.html').read_text()
+
+        elif path == "/geneInfo":
+            if 'gene' in arguments:
+                info = e.get_gene_info(arguments['gene'][0])
+                contents = read_html_file("gene_seq.html").render(context={
+                    "start":  info["start"],
+                    "end": info["end"],
+                    "len": info["length"],
+                })
+            else:
+                contents = Path('html/Error.html').read_text()
+
+        elif path == "/geneCalc":
+            if 'gene' in arguments:
+                calcs = e.get_gene_calcs(arguments['gene'][0])
+                contents = read_html_file("gene_seq.html").render(context={
+                    "calcs":  calcs,
+                })
+            else:
+                contents = Path('html/Error.html').read_text()
+
+        else:
+            contents = Path('html/Error.html').read_text()
 
 
         # Generating the response message
