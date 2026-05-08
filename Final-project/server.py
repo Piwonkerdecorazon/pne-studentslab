@@ -46,8 +46,16 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         else:
             if 'list' in arguments:
                 if 'limit' in arguments:
-                    limit = int(arguments['limit'][0])
-                    contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
+                    try:
+                        int(arguments['limit'][0])
+                        valid = True
+                    except:
+                        valid = False
+                    if valid == True:
+                        limit = int(arguments['limit'][0])
+                        contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
+                    else:
+                        contents = Path('html/Error.html').read_text()
                 else:
                     contents = read_html_file("list.html").render(context={"list": e.list(), "limit": "not defined by the user"})
             if 'get_karyotype' in arguments:
@@ -65,22 +73,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if 'chromosome_length' in arguments:
                 if ('chromosome_species' in arguments) and ('chromosome_name' in arguments):
                     if e.check_specie(arguments['chromosome_species'][0]) == True:
-                        if e.check_chromosome(arguments['chromosome_species'][0], arguments['chromosome_name'][0]) == True:
-                            contents = read_html_file("chromosome.html").render(context=
-                            {
-                                "length": e.chrom_length(arguments['chromosome_species'][0], arguments['chromosome_name'][0]),
-                            })
+                        if e.check_chrom_database(arguments['chromosome_species'][0]) == True: #Check if said species has its karyotype sequenced
+                            if e.check_chromosome(arguments['chromosome_species'][0], arguments['chromosome_name'][0]) == True: #Check if the chromosome is in the karyotype
+                                contents = read_html_file("chromosome.html").render(context=
+                                {
+                                    "length": e.chrom_length(arguments['chromosome_species'][0], arguments['chromosome_name'][0])
+                                })
+                            else:
+                                contents = Path('html/Error.html').read_text()
                         else:
                             contents = Path('html/Error.html').read_text()
                     else:
                         contents = Path('html/Error.html').read_text()
                 else:
                     contents = Path('html/Error.html').read_text()
-
-
-
-
-
 
 
         # Generating the response message

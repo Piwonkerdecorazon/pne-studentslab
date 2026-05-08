@@ -45,7 +45,6 @@ class ensembl:
 
     def check_specie(self, specie):
         valid = False
-        species_list = []
         species_dict = {}
         ENDPOINT = '/info/species'
         URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
@@ -75,40 +74,26 @@ class ensembl:
         species_names = sorted(response['species'], key=get_name)
 
         for i in range(0, len(response['species'])):
-            species_list.append((species_names[i]['common_name'] + "\n"))
-            species_dict[species_names[i]['common_name']] = species_names[i]['aliases']
+            species_dict[species_names[i]['name'].lower()] = species_names[i]['aliases']
         print(species_dict)
 
         for i in species_dict:
-            if specie.lower() in species_dict:
+            if specie.replace(' ', '_').lower() in species_dict:
                 valid = True
             elif specie.lower() in species_dict[i]:
                 valid = True
         return valid
+    def check_chrom_database(self, specie):
+        valid = True
+        chromosome_list = self.karyo(specie).split("\n")
+        if chromosome_list == ['']:
+            valid = False
+        return valid
+
     def check_chromosome(self, specie, chromosome):
         valid = False
-        ENDPOINT = '/info/assembly/' + specie.replace(' ', '_').lower()
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
-
         chromosome_list = self.karyo(specie).split("\n")
+        print(chromosome_list)
         if chromosome in chromosome_list:
             valid = True
         else:
@@ -178,4 +163,3 @@ class ensembl:
             if i['name'] == target:
                 chromosome_length = i['length']
         return str(chromosome_length)
-
