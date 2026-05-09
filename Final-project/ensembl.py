@@ -8,16 +8,20 @@ class ensembl:
         self.SERVER = 'rest.ensembl.org'
         self.PARAMS = '?content-type=application/json'
 
-    def list(self, limit=None):
-        species_list = ""
-        ENDPOINT = '/info/species'
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
+    def conn_ensembl(self, ENDPOINT, EXTRA_PARAMS = None):
+        if EXTRA_PARAMS == None:
+            URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
+        else:
+            URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS + EXTRA_PARAMS
         print(f"\nConnecting to server: {self.SERVER}")
         print(f"\nURL: {URL}")
         # Connect with the server
         conn = http.client.HTTPConnection(self.SERVER)
         try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
+            if EXTRA_PARAMS == None:
+                conn.request("GET", ENDPOINT + self.PARAMS)
+            else:
+                conn.request("GET", ENDPOINT + self.PARAMS + EXTRA_PARAMS)
         except ConnectionRefusedError:
             print("ERROR! Cannot connect to the Server")
             exit()
@@ -30,6 +34,12 @@ class ensembl:
         # -- Read the response's body
         data1 = r1.read().decode("utf-8")
         response = json.loads(data1)
+        return response
+
+    def list(self, limit=None):
+        species_list = ""
+        ENDPOINT = '/info/species'
+        response = self.conn_ensembl(ENDPOINT)
         #Ensembl sends a disorganized list, then we need to sort alphabetically every time we access
         def get_display_name(species):
             return species['display_name']
@@ -47,25 +57,7 @@ class ensembl:
         valid = False
         species_dict = {}
         ENDPOINT = '/info/species'
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
 
         # Ensembl sends a disorganized list, then we need to sort alphabetically every time we access
         def get_name(species):
@@ -109,25 +101,7 @@ class ensembl:
         specie_name = self.get_name_from_alias(specie)
 
         ENDPOINT = '/info/assembly/' + specie_name.replace(' ', '_').lower()
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
         for i in range (0, len(response['karyotype'])):
             karyotype += (response['karyotype'][i] + "\n")
         return karyotype
@@ -136,25 +110,7 @@ class ensembl:
     def chrom_length(self, specie, chromosome):
         chromosome_length = 0
         ENDPOINT = '/info/assembly/' + specie.replace(' ', '_').lower()
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
         chromosome_list = self.karyo(specie).split("\n")
         if chromosome in chromosome_list:
             target = chromosome
@@ -170,25 +126,7 @@ class ensembl:
         name = ""
         species_dict = {}
         ENDPOINT = '/info/species'
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
 
         # Ensembl sends a disorganized list, then we need to sort alphabetically every time we access
         def get_name(species):
@@ -217,75 +155,22 @@ class ensembl:
     """
     def get_gene_id(self, gene):
         ENDPOINT = '/lookup/symbol/homo_sapiens/' + gene
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
         gene_id = response['id']
         return gene_id
 
     def get_gene_seq(self, gene):
         ENDPOINT = '/sequence/id/' + self.get_gene_id(gene)
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
         gene_seq = response['seq']
         return gene_seq
 
     def get_gene_info(self, gene):
         ENDPOINT = '/lookup/id/' + self.get_gene_id(gene)
-        URL = "https://" + self.SERVER + ENDPOINT + self.PARAMS
-        print(f"\nConnecting to server: {self.SERVER}")
-        print(f"\nURL: {URL}")
-        # Connect with the server
-        conn = http.client.HTTPConnection(self.SERVER)
-        try:
-            conn.request("GET", ENDPOINT + self.PARAMS)
-        except ConnectionRefusedError:
-            print("ERROR! Cannot connect to the Server")
-            exit()
-        # -- Read the response message from the server
-        r1 = conn.getresponse()
-
-        # -- Print the status line
-        print(f"Response received!: {r1.status} {r1.reason}\n")
-
-        # -- Read the response's body
-        data1 = r1.read().decode("utf-8")
-        response = json.loads(data1)
+        response = self.conn_ensembl(ENDPOINT)
         gene_info = {"start": response["start"], "end": response["end"],"length": response["length"]}
         return gene_info
+
     def get_gene_calcs(self, gene):
         output = ""
         sequence = self.get_gene_seq(gene)
@@ -296,8 +181,18 @@ class ensembl:
             totalCount += seq_count[i]
         output = "The total of bases is: " + str(totalCount) + "\n"
         for i in seq_count:
-            print(i + ": " + str(seq_count[i]) + " (" + str(seq_count[i] / totalCount * 100) + "%)")
+            output += i + ": " + str(seq_count[i]) + " (" + str(int(seq_count[i] / totalCount * 100)) + "%) \n"
+        print(output)
         return output
+    def get_genes_from_chromosome(self, chromosome, start, end):
+        ENDPOINT = '/overlap/region/human/' + chromosome + ":" + start + "-" + end
+        EXTRA_PARAMS = ";feature=gene"
+        response = self.conn_ensembl(ENDPOINT, EXTRA_PARAMS)
+        genes_in_region = ""
+        for i in response:
+            genes_in_region += "Id: " + i['id'] + " " + " (Start-End) " + str(i['start']) + " base - " + str(i['end']) + " base\n"
+        return genes_in_region
+
 e = ensembl()
-print(e.get_name_from_alias('shrew mouse'))
-print(e.get_gene_id('ADA'))
+#print(e.get_name_from_alias('shrew mouse'))
+print(e.get_genes_from_chromosome('7', '140424943', '140624564'))

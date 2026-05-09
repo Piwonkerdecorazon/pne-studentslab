@@ -6,7 +6,11 @@
   </head>
   <body style ="background-color: lightblue;">
     <h1>The sequence of the gene requested is:</h1>
-     <h2>{{ context.seq }}</h2>
+     <h2>
+         <div style="width: 100ch; word-break: break-all;">
+       {{context.seq}}
+         </div>
+     </h2>
       <br><br>
   </body>
 </html>

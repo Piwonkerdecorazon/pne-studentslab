@@ -118,8 +118,16 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/geneCalc":
             if 'gene' in arguments:
                 calcs = e.get_gene_calcs(arguments['gene'][0])
-                contents = read_html_file("gene_seq.html").render(context={
+                contents = read_html_file("gene_calc.html").render(context={
                     "calcs":  calcs,
+                })
+            else:
+                contents = Path('html/Error.html').read_text()
+        elif path == "/geneList":
+            if 'chromo' in arguments and 'start' in arguments and 'end' in arguments :
+                genes = e.get_genes_from_chromosome(arguments['chromo'][0],arguments['start'][0],arguments['end'][0])
+                contents = read_html_file("gene_chrom_region.html").render(context={
+                    "genes":  genes,
                 })
             else:
                 contents = Path('html/Error.html').read_text()
