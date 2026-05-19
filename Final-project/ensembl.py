@@ -218,7 +218,6 @@ class ensembl:
         output = "The total of bases is: " + str(totalCount) + "\n"
         for i in seq_count:
             output += i + ": " + str(seq_count[i]) + " (" + str(int(seq_count[i] / totalCount * 100)) + "%) \n"
-        print(output)
         return output
 
     def get_genes_from_chromosome(self, chromosome, start, end):
