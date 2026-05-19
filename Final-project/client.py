@@ -1,7 +1,5 @@
 import http.client
-import json
-import termcolor
-##http://127.0.0.1:8080/karyotype?species=human&get_karyotype=Send
+
 PORT = 8080
 SERVER = 'localhost:8080'
 def connect(ENDPOINT, EXTRA_PARAMS = None):
@@ -37,4 +35,12 @@ def connect(ENDPOINT, EXTRA_PARAMS = None):
     data1 = r1.read().decode("utf-8")
     return data1
 
-print(f"CONTENT: {connect("/geneList?chromo=9&start=22125500&end=22146000&json=1")}")
+print(f"CONTENT main menu: {connect("/")}")
+print(f"CONTENT list: {connect("/listSpecies?limit=&list=Send")}")
+print(f"CONTENT karyotype: {connect("/karyotype?species=Atlantic+salmon+-+North+American+origin+Brian&get_karyotype=Send")}")
+print(f"CONTENT chromosome length: {connect("/chromosomeLength?species=sheep&chromo=2&chromosome_length=Send")}")
+print(f"CONTENT gene id: {connect("/geneLookup?gene=FOXP2&lookup=Send")}")
+print(f"CONTENT gene seq: {connect("/geneSeq?gene=FOXP2&list=Send")}")
+print(f"CONTENT gene info: {connect("/geneInfo?gene=FOXP2&info=Send")}")
+print(f"CONTENT gene calcs: {connect("/geneCalc?gene=FOXP2&calc=Send")}")
+print(f"CONTENT genes in region: {connect("/geneList?chromo=12&start=20000&end=30000&list=Send")}")

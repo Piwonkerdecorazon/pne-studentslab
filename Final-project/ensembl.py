@@ -1,7 +1,7 @@
 import http.client
 import json
-import termcolor
 from Seq1 import Seq
+
 class ensembl:
     """A class for calling the Ensembl API Rest"""
     def __init__(self):

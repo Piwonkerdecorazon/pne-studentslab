@@ -73,10 +73,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path == "/karyotype":
             if ('species' in arguments
                     and e.check_specie(arguments['species'][0]) == True):
-
+                kar = e.karyo(arguments['species'][0])
+                if kar == "":
+                    kar = "No karyotype found in the ensembl database for that species, sorry"
                 contents = read_html_file("karyotype.html").render(context=
                 {
-                    "karyotype": e.karyo(arguments['species'][0]),
+                    "karyotype": kar,
                     "specie": arguments['species'][0]
                 })
                 if "json" in arguments and arguments["json"][0] == "1":
