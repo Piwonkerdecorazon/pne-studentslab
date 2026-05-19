@@ -67,26 +67,21 @@ class ensembl:
             species_dict[index] = species_names[i]['aliases']
             species_dict[index].append(species_names[i]['common_name'].lower())
             species_dict[index].append(species_names[i]['display_name'].lower())
-        print(species_dict)
 
         for i in species_dict:
             if specie.replace(' ', '_').lower() in species_dict:
-                print("it is name")
                 return True
             elif specie.lower() in species_dict[i]:
-                print("it is an alias")
                 return True
         return False
 
     def check_chromosome(self, specie, chromosome):
-        valid = False
         chromosome_list = self.karyo(specie).split("\n")
         print(chromosome_list)
         if chromosome in chromosome_list:
-            valid = True
+            return True
         else:
-            valid = False
-        return valid
+            return False
 
     def check_human(self, gene):
         human = False
@@ -97,15 +92,12 @@ class ensembl:
         return human
 
     def check_gene(self, gene):
-        valid = False
         try:
             ENDPOINT = '/lookup/symbol/homo_sapiens/' + gene
             response = self.conn_ensembl(ENDPOINT)
-            gene_id = response['id']
-            valid = True
+            return True
         except:
-            pass
-        return valid
+            return False
 
     """
 

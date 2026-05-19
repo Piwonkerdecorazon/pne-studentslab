@@ -223,7 +223,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         # Send the response message
-        if "json" in arguments:
+        if "json" in arguments and arguments["json"][0] == "1":
             self.wfile.write(json_file)
         else:
             self.wfile.write(str.encode(contents))
