@@ -3,14 +3,11 @@ import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
-from Seq1 import Seq
 import jinja2 as j
 from ensembl import ensembl
 import json
 
 e = ensembl()
-s = Seq()
-path_list = ["/listSpecies", "/karyotype", "/chromosomeLength", "/"]
 # Define the Server's port
 PORT = 8080
 
