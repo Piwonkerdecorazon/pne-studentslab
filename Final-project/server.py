@@ -111,7 +111,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     and e.check_gene(arguments['gene'][0]) == True
                     and e.check_human(arguments['gene'][0]) == True):
                 info = e.get_gene_info(arguments['gene'][0])
-                contents = read_html_file("gene_seq.html").render(context={
+                contents = read_html_file("gene_info.html").render(context={
                     "start":  info["start"],
                     "end": info["end"],
                     "len": info["length"],

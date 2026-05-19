@@ -52,7 +52,6 @@ class ensembl:
     """
 
     def check_specie(self, specie):
-        valid = False
         species_dict = {}
         ENDPOINT = '/info/species'
         response = self.conn_ensembl(ENDPOINT)
@@ -64,21 +63,24 @@ class ensembl:
         species_names = sorted(response['species'], key=get_name)
 
         for i in range(0, len(response['species'])):
-            species_dict[species_names[i]['name'].lower()] = species_names[i]['aliases']
+            index = species_names[i]['name'].lower()
+            species_dict[index] = species_names[i]['aliases']
+            species_dict[index].append(species_names[i]['common_name'].lower())
+            species_dict[index].append(species_names[i]['display_name'].lower())
         print(species_dict)
 
         for i in species_dict:
             if specie.replace(' ', '_').lower() in species_dict:
-                valid = True
                 print("it is name")
+                return True
             elif specie.lower() in species_dict[i]:
-                valid = True
                 print("it is an alias")
-        return valid
+                return True
+        return False
 
     def check_chrom_database(self, specie):
         valid = True
-        chromosome_list = self.karyo(specie).split("\n")
+        chromosome_list = self.karyo(self.get_name_from_alias(specie)).split("\n")
         if chromosome_list == ['']:
             valid = False
         return valid
@@ -176,7 +178,10 @@ class ensembl:
         species_names = sorted(response['species'], key=get_name)
 
         for i in range(0, len(response['species'])):
-            species_dict[species_names[i]['name'].lower()] = species_names[i]['aliases']
+            index = species_names[i]['name'].lower()
+            species_dict[index] = species_names[i]['aliases']
+            species_dict[index].append(species_names[i]['common_name'].lower())
+            species_dict[index].append(species_names[i]['display_name'].lower())
         print(species_dict)
 
         if specie.replace(' ', '_').lower() in species_dict:
@@ -210,7 +215,7 @@ class ensembl:
     def get_gene_info(self, gene):
         ENDPOINT = '/lookup/id/' + self.get_gene_id(gene)
         response = self.conn_ensembl(ENDPOINT)
-        gene_info = {"start": response["start"], "end": response["end"],"length": response["length"]}
+        gene_info = {"start": response["start"], "end": response["end"],"length": str(response["end"] - response["start"])}
         return gene_info
 
     def get_gene_calcs(self, gene):
@@ -235,3 +240,8 @@ class ensembl:
         for i in response:
             genes_in_region += "Id: " + i['id'] + " " + " (Start-End) " + str(i['start']) + " base - " + str(i['end']) + " base\n"
         return genes_in_region
+
+e = ensembl()
+print(e.check_specie("Dog - Basenji"))
+print(e.get_name_from_alias("Dog - Basenji"))
+print(e.check_chrom_database("Dog - Basenji"))
