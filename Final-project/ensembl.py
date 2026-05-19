@@ -78,13 +78,6 @@ class ensembl:
                 return True
         return False
 
-    def check_chrom_database(self, specie):
-        valid = True
-        chromosome_list = self.karyo(self.get_name_from_alias(specie)).split("\n")
-        if chromosome_list == ['']:
-            valid = False
-        return valid
-
     def check_chromosome(self, specie, chromosome):
         valid = False
         chromosome_list = self.karyo(specie).split("\n")
@@ -152,7 +145,7 @@ class ensembl:
 
     def chrom_length(self, specie, chromosome):
         chromosome_length = 0
-        ENDPOINT = '/info/assembly/' + specie.replace(' ', '_').lower()
+        ENDPOINT = '/info/assembly/' + self.get_name_from_alias(specie).replace(' ', '_').lower()
         response = self.conn_ensembl(ENDPOINT)
         chromosome_list = self.karyo(specie).split("\n")
         if chromosome in chromosome_list:
@@ -182,15 +175,11 @@ class ensembl:
             species_dict[index] = species_names[i]['aliases']
             species_dict[index].append(species_names[i]['common_name'].lower())
             species_dict[index].append(species_names[i]['display_name'].lower())
-        print(species_dict)
-
         if specie.replace(' ', '_').lower() in species_dict:
             name = specie
-            print("it is name")
         for i in species_dict:
             if specie.lower() in species_dict[i]:
                 name = i
-                print("it is an alias")
         return name
 
     """
@@ -240,8 +229,3 @@ class ensembl:
         for i in response:
             genes_in_region += "Id: " + i['id'] + " " + " (Start-End) " + str(i['start']) + " base - " + str(i['end']) + " base\n"
         return genes_in_region
-
-e = ensembl()
-print(e.check_specie("Dog - Basenji"))
-print(e.get_name_from_alias("Dog - Basenji"))
-print(e.check_chrom_database("Dog - Basenji"))
