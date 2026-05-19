@@ -37,4 +37,4 @@ def connect(ENDPOINT, EXTRA_PARAMS = None):
     data1 = r1.read().decode("utf-8")
     return data1
 
-print(f"CONTENT: {connect("/chromosomeLength?species=human&chromo=2&chromosome_length=Send")}")
+print(f"CONTENT: {connect("/geneList?chromo=9&start=22125500&end=22146000&json=1")}")

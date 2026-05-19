@@ -171,17 +171,18 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 calcs = e.get_gene_calcs(arguments['gene'][0])
                 contents = read_html_file("gene_calc.html").render(context={"calcs":  calcs,})
                 if "json" in arguments and arguments["json"][0] == "1":
-                    calcs_terms = calcs.split()
-                    json_file = json.dumps(
-                        {"name": arguments['gene'][0],
-                         "id": e.get_gene_id(arguments['gene'][0]),
-                         "length": calcs_terms[1],
-                         "A": [calcs_terms[3], calcs_terms[4]],
-                         "G": [calcs_terms[6], calcs_terms[7]],
-                         "C": [calcs_terms[9], calcs_terms[10]],
-                         "T": [calcs_terms[12], calcs_terms[13]]
-                         }
-                    ).encode('utf-8')
+                    calcs_terms = calcs.splitlines()
+                    calc_dict = {
+                        "name": arguments['gene'][0],
+                        "id": e.get_gene_id(arguments['gene'][0]),
+                        "length": calcs_terms[0].split()[5],
+                    }
+                    for i in range (1, len(calcs_terms)):
+                        line = calcs_terms[i].split()
+                        print(line)
+                        calc_dict[line[0][0]] = [line[1], line[2]]
+                    print (calc_dict)
+                    json_file = json.dumps(calc_dict).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
 
@@ -199,7 +200,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     genes_in_region = genes.splitlines()
                     for i in genes_in_region:
                         terms = i.split()
-                        genes_dict[terms[1]] = {"Start": terms[4], "End": terms[7]}
+                        genes_dict[terms[1]] = {"Start": terms[3], "End": terms[6]}
                     json_file = json.dumps(genes_dict).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
@@ -213,7 +214,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         # Define the content-type header:
         self.send_header('Content-Type', 'text/html')
-        if "json" in arguments:
+        if "json" in arguments and arguments["json"][0] == "1":
             self.send_header('Content-Length', str(len(json_file)))
         else:
             self.send_header('Content-Length', str(len(str.encode(contents))))
