@@ -126,7 +126,7 @@ class ensembl:
             for i in range(0, len(response['species']) - 1):
                 species_list += (species[i]['display_name'] + "\n")
         else:
-            for i in range (0, limit-1):
+            for i in range (0, limit):
                 species_list += (species[i]['display_name'] + "\n")
 
         return species_list

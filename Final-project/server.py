@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 from Seq1 import Seq
 import jinja2 as j
 from ensembl import ensembl
+import json
 
 e = ensembl()
 s = Seq()
@@ -41,6 +42,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         if path == "/":
             contents = Path('html/main.html').read_text()
+            if "json" in arguments and arguments["json"][0] == "1":
+                json_file = json.dumps(
+                    {"This is the index": "0"}
+                ).encode('utf-8')
 
         elif path == "/listSpecies":
             if 'limit' in arguments:
@@ -52,10 +57,18 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if valid == True:
                     limit = int(arguments['limit'][0])
                     contents = read_html_file("list.html").render(context={"list": e.list(limit), "limit": limit})
+                    if "json" in arguments and arguments["json"][0] == "1":
+                        json_file = json.dumps(
+                            {"species_list": e.list(limit).splitlines()}
+                        ).encode('utf-8')
                 else:
                     contents = Path('html/Error.html').read_text()
             else:
                 contents = read_html_file("list.html").render(context={"list": e.list(), "limit": "not defined by the user"})
+                if "json" in arguments and arguments["json"][0] == "1":
+                    json_file = json.dumps(
+                        {"species_list": e.list().splitlines()}
+                    ).encode('utf-8')
 
         elif path == "/karyotype":
             if ('species' in arguments
@@ -66,6 +79,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     "karyotype": e.karyo(arguments['species'][0]),
                     "specie": arguments['species'][0]
                 })
+                if "json" in arguments and arguments["json"][0] == "1":
+                    json_file = json.dumps(
+                        {
+                            "species" : arguments['species'][0],
+                            "chromosomes": e.karyo(arguments['species'][0]).splitlines()}
+                    ).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
 
@@ -79,6 +98,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         {
                             "length": e.chrom_length(arguments['species'][0], arguments['chromo'][0])
                         })
+                        if "json" in arguments and arguments["json"][0] == "1":
+                            json_file = json.dumps(
+                                {   "specie" : arguments['species'][0],
+                                    "chromosome" : arguments['chromo'][0],
+                                    "chromosome_length": e.chrom_length(arguments['species'][0], arguments['chromo'][0])}
+                            ).encode('utf-8')
+
             else:
                 contents = Path('html/Error.html').read_text()
 
@@ -94,6 +120,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     and e.check_gene(arguments['gene'][0]) == True
                     and e.check_human(arguments['gene'][0]) == True):
                 contents = read_html_file("gene_id.html").render(context={"id": e.get_gene_id(arguments['gene'][0]) })
+                if "json" in arguments and arguments["json"][0] == "1":
+                    json_file = json.dumps(
+                        {"name": arguments['gene'][0],
+                         "id": e.get_gene_id(arguments['gene'][0])}
+                    ).encode('utf-8')
 
             else:
                 contents = Path('html/Error.html').read_text()
@@ -103,6 +134,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     and e.check_gene(arguments['gene'][0]) == True
                     and e.check_human(arguments['gene'][0]) == True):
                 contents = read_html_file("gene_seq.html").render(context={"seq":  e.get_gene_seq(arguments['gene'][0]) })
+                if "json" in arguments and arguments["json"][0] == "1":
+                    json_file = json.dumps(
+                        {"name": arguments['gene'][0],
+                         "id": e.get_gene_id(arguments['gene'][0]),
+                         "Sequence": e.get_gene_seq(arguments['gene'][0])}
+                    ).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
 
@@ -116,6 +153,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     "end": info["end"],
                     "len": info["length"],
                 })
+                if "json" in arguments and arguments["json"][0] == "1":
+                    json_file = json.dumps(
+                        {"name": arguments['gene'][0],
+                         "id": e.get_gene_id(arguments['gene'][0]),
+                         "start":  info["start"],
+                         "end": info["end"],
+                         "length": info["length"]}
+                    ).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
 
@@ -125,17 +170,37 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     and e.check_human(arguments['gene'][0]) == True):
                 calcs = e.get_gene_calcs(arguments['gene'][0])
                 contents = read_html_file("gene_calc.html").render(context={"calcs":  calcs,})
+                if "json" in arguments and arguments["json"][0] == "1":
+                    calcs_terms = calcs.split()
+                    json_file = json.dumps(
+                        {"name": arguments['gene'][0],
+                         "id": e.get_gene_id(arguments['gene'][0]),
+                         "length": calcs_terms[1],
+                         "A": [calcs_terms[3], calcs_terms[4]],
+                         "G": [calcs_terms[6], calcs_terms[7]],
+                         "C": [calcs_terms[9], calcs_terms[10]],
+                         "T": [calcs_terms[12], calcs_terms[13]]
+                         }
+                    ).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
 
         elif path == "/geneList":
             if ('chromo' in arguments
                     and 'start' in arguments
-                    and 'end' in arguments
-                    and e.check_gene(arguments['gene'][0]) == True
-                    and e.check_human(arguments['gene'][0]) == True):
+                    and 'end' in arguments):
                 genes = e.get_genes_from_chromosome(arguments['chromo'][0],arguments['start'][0],arguments['end'][0])
                 contents = read_html_file("gene_chrom_region.html").render(context={"genes":  genes,})
+                if "json" in arguments and arguments["json"][0] == "1":
+                    genes_dict = {
+                        "starting_base": arguments['start'][0],
+                        "ending_base": arguments['end'][0]
+                        }
+                    genes_in_region = genes.splitlines()
+                    for i in genes_in_region:
+                        terms = i.split()
+                        genes_dict[terms[1]] = {"Start": terms[4], "End": terms[7]}
+                    json_file = json.dumps(genes_dict).encode('utf-8')
             else:
                 contents = Path('html/Error.html').read_text()
 
@@ -148,13 +213,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         # Define the content-type header:
         self.send_header('Content-Type', 'text/html')
-        self.send_header('Content-Length', len(str.encode(contents)))
+        if "json" in arguments:
+            self.send_header('Content-Length', str(len(json_file)))
+        else:
+            self.send_header('Content-Length', str(len(str.encode(contents))))
 
         # The header is finished
         self.end_headers()
 
         # Send the response message
-        self.wfile.write(str.encode(contents))
+        if "json" in arguments:
+            self.wfile.write(json_file)
+        else:
+            self.wfile.write(str.encode(contents))
 
         return
 
